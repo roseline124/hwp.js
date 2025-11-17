@@ -13,12 +13,22 @@ export interface HwpxHeader {
 export interface HwpxCharStyle {
   color?: string;
   fontSizePx?: number;
+  fontWeight?: "bold";
 }
 
 export interface HwpxRun {
   text: string;
   charPrIDRef?: number;
   style?: HwpxCharStyle;
+  autoNumType?: "PAGE" | "TOTAL_PAGE";
+  image?: {
+    id: string;
+    data?: Uint8Array;
+    name?: string;
+    mime?: string;
+    widthPx?: number;
+    heightPx?: number;
+  };
 }
 
 export interface HwpxParagraphStyle {
@@ -32,6 +42,7 @@ export interface HwpxParagraph {
 
 export interface HwpxSection {
   paragraphs: HwpxParagraph[];
+  footer?: HwpxParagraph[];
 }
 
 export interface HwpxDocument {

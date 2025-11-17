@@ -1,6 +1,7 @@
 import { unzipSync, strFromU8 } from "fflate";
 import { HwpxDocument, HwpxHeader, HwpxSection } from "./models";
-import { parseHeaderXml, parseSectionXml } from "./utils";
+import HeaderParser from "./parsers/HeaderParser";
+import SectionParser from "./parsers/SectionParser";
 
 function defaultHeader(): HwpxHeader {
   return {
@@ -22,7 +23,7 @@ export default function parseHwpx(data: Uint8Array): HwpxDocument {
   );
   const headerXml = headerEntry ? strFromU8(files[headerEntry]) : "";
   const { charStyles, paraStyles, styleIndex } = headerXml
-    ? parseHeaderXml(headerXml)
+    ? new HeaderParser().parse(headerXml)
     : { charStyles: {}, paraStyles: {}, styleIndex: {} };
 
   const sectionEntries = Object.keys(files)
@@ -39,7 +40,13 @@ export default function parseHwpx(data: Uint8Array): HwpxDocument {
   } else {
     for (const name of sectionEntries) {
       const xml = strFromU8(files[name]);
-      sections.push(parseSectionXml(xml, charStyles, paraStyles, styleIndex));
+      const parser = new SectionParser(
+        charStyles,
+        paraStyles,
+        styleIndex,
+        files
+      );
+      sections.push(parser.parse(xml));
     }
   }
 
