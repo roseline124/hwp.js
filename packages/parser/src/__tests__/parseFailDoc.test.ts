@@ -21,11 +21,12 @@ import HWPDocument from "../models/document";
 import HWPVersion from "../models/version";
 import parse from "../parse";
 
-const reportFilePath = path.join(__dirname, "data", "basicsReport.hwp");
+const reportFilePath = path.join(__dirname, "data", "failedDoc.hwpx");
 const reportFile = fs.readFileSync(reportFilePath);
 
 describe("parse", () => {
   const hwpDocument = parse(reportFile, { type: "binary" });
+  console.log(hwpDocument);
 
   it("should parse HWP file", () => {
     expect(hwpDocument instanceof HWPDocument).toBe(true);
