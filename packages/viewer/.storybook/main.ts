@@ -9,7 +9,8 @@ const config: StorybookConfig = {
   },
   staticDirs: [
     // 웹사이트의 샘플 hwp 파일을 그대로 노출
-    { from: "../../../website/static/files", to: "/files" },
+    // { from: "assets", to: "/assets" },
+    "./assets",
   ],
   webpackFinal: async (baseConfig) => {
     baseConfig.module?.rules?.push({
