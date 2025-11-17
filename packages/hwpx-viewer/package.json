@@ -1,0 +1,27 @@
+{
+  "name": "@hwp.js/hwpx-viewer",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "siseEffect": false,
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "publishConfig": {
+    "main": "./build/cjs.js",
+    "module": "./build/esm.js",
+    "types": "./build/index.d.ts"
+  },
+  "devDependencies": {
+    "@hwp.js/hwpx-parser": "workspace:*",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/html-webpack5": "^8.6.14",
+    "storybook": "^8.6.14",
+    "ts-loader": "^9.5.4"
+  },
+  "peerDependencies": {
+    "@hwp.js/hwpx-parser": "^0.0.1"
+  }
+}

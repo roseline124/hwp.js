@@ -1,0 +1,17 @@
+{
+  "name": "@hwp.js/hwpx-parser",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "siseEffect": false,
+  "publishConfig": {
+    "main": "./build/cjs.js",
+    "module": "./build/esm.js",
+    "types": "./build/index.d.ts"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  }
+}
+
