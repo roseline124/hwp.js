@@ -18,7 +18,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint-staged && yarn typecheck && yarn jest"
+      "pre-commit": "pnpm run lint-staged && pnpm -w run typecheck && pnpm exec jest"
     }
   },
   "lint-staged": {
@@ -27,10 +27,10 @@
     ]
   },
   "scripts": {
-    "build": "yarn typecheck && rollup -c rollup.config.js",
+    "build": "pnpm -w run typecheck && rollup -c rollup.config.js",
     "lint-staged": "lint-staged",
-    "typecheck": "yarn workspaces foreach run typecheck",
-    "lint": "yarn workspaces foreach run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
     "test": "jest --coverage"
   },
   "devDependencies": {
@@ -51,5 +51,5 @@
     "lint-staged": "^10.2.11",
     "typescript": "^4.7.4"
   },
-  "packageManager": "yarn@3.2.2"
+  "packageManager": "pnpm@9"
 }
