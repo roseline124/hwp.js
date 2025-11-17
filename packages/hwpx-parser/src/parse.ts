@@ -1,65 +1,55 @@
-import { unzipSync, strFromU8 } from 'fflate'
-import { HwpxDocument, HwpxHeader, HwpxParagraph, HwpxRun, HwpxSection } from './models'
+import { unzipSync, strFromU8 } from "fflate";
+import { HwpxDocument, HwpxHeader, HwpxSection } from "./models";
+import { parseHeaderXml, parseSectionXml } from "./utils";
 
 function defaultHeader(): HwpxHeader {
   return {
-    pageWidth: 59528,
-    pageHeight: 84188,
+    pageWidth: 21000,
+    pageHeight: 29700,
     marginLeft: 0,
     marginRight: 0,
     marginTop: 0,
     marginBottom: 0,
-  }
-}
-
-function getTextContent(node: Element, ns: string): string[] {
-  const list: string[] = []
-  const tNodes = node.querySelectorAll(`${ns}t, t`)
-  tNodes.forEach((t) => list.push(t.textContent || ''))
-  return list
-}
-
-function parseSectionXml(xml: string): HwpxSection {
-  const doc = new DOMParser().parseFromString(xml, 'application/xml')
-  const ns = 'hp\\:'
-  const paragraphs: HwpxParagraph[] = []
-
-  const pNodes = doc.querySelectorAll(`${ns}p, p`)
-  pNodes.forEach((p) => {
-    const runs: HwpxRun[] = []
-    const texts = getTextContent(p as Element, `${ns}`)
-    texts.forEach((text) => runs.push({ text }))
-    paragraphs.push({ runs })
-  })
-
-  return { paragraphs }
+  };
 }
 
 export default function parseHwpx(data: Uint8Array): HwpxDocument {
-  const files = unzipSync(data)
+  const files = unzipSync(data);
+
+  // header.xml → 스타일 파싱
+  const headerEntry = Object.keys(files).find(
+    (p) => p === "Contents/header.xml"
+  );
+  const headerXml = headerEntry ? strFromU8(files[headerEntry]) : "";
+  const { charStyles, paraStyles, styleIndex } = headerXml
+    ? parseHeaderXml(headerXml)
+    : { charStyles: {}, paraStyles: {}, styleIndex: {} };
 
   const sectionEntries = Object.keys(files)
     .filter((name) => /^Contents\/section\d+\.xml$/i.test(name))
     .sort((a, b) => {
-      const ai = Number(a.match(/section(\d+)\.xml/i)?.[1] || 0)
-      const bi = Number(b.match(/section(\d+)\.xml/i)?.[1] || 0)
-      return ai - bi
-    })
+      const ai = Number(a.match(/section(\d+)\.xml/i)?.[1] || 0);
+      const bi = Number(b.match(/section(\d+)\.xml/i)?.[1] || 0);
+      return ai - bi;
+    });
 
-  const sections: HwpxSection[] = []
+  const sections: HwpxSection[] = [];
   if (sectionEntries.length === 0) {
-    sections.push({ paragraphs: [] })
+    sections.push({ paragraphs: [] });
   } else {
     for (const name of sectionEntries) {
-      const xml = strFromU8(files[name])
-      sections.push(parseSectionXml(xml))
+      const xml = strFromU8(files[name]);
+      sections.push(parseSectionXml(xml, charStyles, paraStyles, styleIndex));
     }
   }
 
+  const header: HwpxHeader = {
+    ...defaultHeader(),
+    charStyles,
+  };
+
   return {
-    header: defaultHeader(),
+    header,
     sections,
-  }
+  };
 }
-
-
